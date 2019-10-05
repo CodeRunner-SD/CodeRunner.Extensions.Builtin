@@ -13,6 +13,6 @@ namespace CodeRunner.Extensions.Builtin.Console
 
         public string Description => "Add basic console and terminal commands.";
 
-        public Version Version => new Version(1, 0);
+        public Version Version => new Version(0, 0, 1);
     }
 }

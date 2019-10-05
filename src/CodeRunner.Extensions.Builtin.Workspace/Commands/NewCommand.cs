@@ -16,6 +16,8 @@ namespace CodeRunner.Extensions.Builtin.Workspace.Commands
     [Export]
     public class NewCommand : BaseCommand<NewCommand.CArgument>
     {
+        public override string Name => "new";
+
         public override Command Configure()
         {
             Command res = new Command("new", "Create new item from template.")
@@ -44,13 +46,13 @@ namespace CodeRunner.Extensions.Builtin.Workspace.Commands
             IWorkspace workspace = pipeline.Services.GetWorkspace();
             ITerminal terminal = console.GetTerminal();
             string template = argument.Template;
-            Packagings.Package<BaseTemplate>? tplItem = await workspace.Templates.GetValue(template);
+            Packagings.Package<ITemplate>? tplItem = await workspace.Templates.GetValue(template);
             if (tplItem == null)
             {
                 terminal.OutputErrorLine($"No this template: {template}.");
                 return 1;
             }
-            BaseTemplate? tpl = tplItem.Data;
+            ITemplate? tpl = tplItem.Data;
             if (tpl == null)
             {
                 terminal.OutputErrorLine($"Can not load this template: {template}.");

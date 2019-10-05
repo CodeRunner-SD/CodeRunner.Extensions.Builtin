@@ -12,7 +12,7 @@ namespace CodeRunner.Managements.FSBased.Templates
 {
     public class OperationsSpaceTemplate : DirectoryTemplate
     {
-        public static Package<BaseOperation> Hello => new Package<BaseOperation>(new SimpleCommandLineOperation(
+        public static Package<IOperation> Hello => new Package<IOperation>(new SimpleCommandLineOperation(
             new CommandLineTemplate[]{
                 new CommandLineTemplate()
                 .UseCommand("echo")

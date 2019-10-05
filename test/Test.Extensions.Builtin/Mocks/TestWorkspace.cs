@@ -11,9 +11,9 @@ using System.Threading.Tasks;
 
 namespace Test.App.Mocks
 {
-    internal class TemplateManager : ItemManager<TemplateSettings, Package<BaseTemplate>>, ITemplateManager { }
+    internal class TemplateManager : ItemManager<TemplateSettings, Package<ITemplate>>, ITemplateManager { }
 
-    internal class OperationManager : ItemManager<OperationSettings, Package<BaseOperation>>, IOperationManager { }
+    internal class OperationManager : ItemManager<OperationSettings, Package<IOperation>>, IOperationManager { }
 
 
     internal class TestWorkItem : IWorkItem
@@ -28,8 +28,8 @@ namespace Test.App.Mocks
         public TestWorkspace(WorkspaceSettings? settings = null,
                              Func<Task>? onInitialize = null,
                              Func<Task>? onClear = null,
-                             Func<string, BaseTemplate?, Func<VariableCollection, ResolveContext, Task>, Task<IWorkItem?>>? onCreate = null,
-                             Func<IWorkItem?, BaseOperation, Func<VariableCollection, ResolveContext, Task>, OperationWatcher, ILogger, Task<PipelineResult<Wrapper<bool>>>>? onExecute = null)
+                             Func<string, ITemplate?, Func<VariableCollection, ResolveContext, Task>, Task<IWorkItem?>>? onCreate = null,
+                             Func<IWorkItem?, IOperation, Func<VariableCollection, ResolveContext, Task>, OperationWatcher, ILogger, Task<PipelineResult<Wrapper<bool>>>>? onExecute = null)
         {
             Templates = new TemplateManager();
             Operations = new OperationManager();
@@ -52,13 +52,13 @@ namespace Test.App.Mocks
 
         public Task<WorkspaceSettings?> Settings { get; }
 
-        public Func<string, BaseTemplate?, Func<VariableCollection, ResolveContext, Task>, Task<IWorkItem?>>? OnCreate { get; }
+        public Func<string, ITemplate?, Func<VariableCollection, ResolveContext, Task>, Task<IWorkItem?>>? OnCreate { get; }
 
         public Func<Task>? OnClear { get; }
 
         public Func<Task>? OnInitialize { get; }
 
-        public Func<IWorkItem?, BaseOperation, Func<VariableCollection, ResolveContext, Task>, OperationWatcher, ILogger, Task<PipelineResult<Wrapper<bool>>>>? OnExecute { get; }
+        public Func<IWorkItem?, IOperation, Func<VariableCollection, ResolveContext, Task>, OperationWatcher, ILogger, Task<PipelineResult<Wrapper<bool>>>>? OnExecute { get; }
 
         public async Task Clear()
         {
@@ -67,13 +67,13 @@ namespace Test.App.Mocks
                 await OnClear();
         }
 
-        public async Task<IWorkItem?> Create(string name, BaseTemplate? from, Func<VariableCollection, ResolveContext, Task> resolveCallback)
+        public async Task<IWorkItem?> Create(string name, ITemplate? from, Func<VariableCollection, ResolveContext, Task> resolveCallback)
         {
             LogScope.Information("Invoke");
             return OnCreate != null ? await OnCreate(name, from, resolveCallback) : null;
         }
 
-        public async Task<PipelineResult<Wrapper<bool>>> Execute(IWorkItem? workItem, BaseOperation from, Func<VariableCollection, ResolveContext, Task> resolveCallback, OperationWatcher watcher, ILogger logger)
+        public async Task<PipelineResult<Wrapper<bool>>> Execute(IWorkItem? workItem, IOperation from, Func<VariableCollection, ResolveContext, Task> resolveCallback, OperationWatcher watcher, ILogger logger)
         {
             LogScope.Information("Invoke");
             return OnExecute != null ? await OnExecute(workItem, from, resolveCallback, watcher, logger) : new PipelineResult<Wrapper<bool>>(false, null, Array.Empty<LogItem>());

@@ -10,6 +10,8 @@ namespace CodeRunner.Extensions.Builtin.Workspace.Commands
     [Export]
     public class TemplateCommand : BaseCommand<TemplateCommand.CArgument>
     {
+        public override string Name => "template";
+
         public override Command Configure()
         {
             Command res = new Command("template", "Manage templates.");

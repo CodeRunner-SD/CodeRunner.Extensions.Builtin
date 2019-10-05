@@ -20,6 +20,8 @@ namespace CodeRunner.Extensions.Builtin.Workspace.Commands
     [Export]
     public class RunCommand : BaseCommand<RunCommand.CArgument>
     {
+        public override string Name => "run";
+
         private class ConsoleLogger : ILogger
         {
             public ConsoleLogger(ITerminal terminal) => Terminal = terminal;
@@ -62,13 +64,13 @@ namespace CodeRunner.Extensions.Builtin.Workspace.Commands
             TextReader input = pipeline.Services.GetInput();
             ITerminal terminal = console.GetTerminal();
             string op = argument.Operation;
-            Packagings.Package<BaseOperation>? tplItem = await workspace.Operations.GetValue(op);
+            Packagings.Package<IOperation>? tplItem = await workspace.Operations.GetValue(op);
             if (tplItem == null)
             {
                 terminal.OutputErrorLine($"No this operation: {op}.");
                 return 1;
             }
-            BaseOperation? tpl = tplItem.Data;
+            IOperation? tpl = tplItem.Data;
             if (tpl == null)
             {
                 terminal.OutputErrorLine($"Can not load this operation: {op}.");

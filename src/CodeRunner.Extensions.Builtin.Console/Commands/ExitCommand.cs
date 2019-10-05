@@ -10,6 +10,8 @@ namespace CodeRunner.Extensions.Builtin.Console.Commands
     [Export]
     public class ExitCommand : BaseCommand<ExitCommand.CArgument>
     {
+        public override string Name => "exit";
+
         public override Command Configure()
         {
             Command res = new Command("exit", "Exit CodeRunner.");
@@ -18,7 +20,7 @@ namespace CodeRunner.Extensions.Builtin.Console.Commands
 
         protected override Task<int> Handle(CArgument argument, IConsole console, InvocationContext context, PipelineContext pipeline, CancellationToken cancellationToken)
         {
-            IHost host = pipeline.Services.Get<IHost>();
+            IHost host = pipeline.Services.GetService<IHost>();
             host.Shutdown();
             return Task.FromResult(0);
         }

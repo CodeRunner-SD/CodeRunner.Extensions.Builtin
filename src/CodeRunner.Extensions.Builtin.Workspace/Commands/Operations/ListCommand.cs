@@ -11,25 +11,27 @@ using System.Threading.Tasks;
 
 namespace CodeRunner.Extensions.Builtin.Workspace.Commands.Operations
 {
-    public class ListCommand : ItemManagers.ListCommand<IOperationManager, OperationSettings, Package<BaseOperation>>
+    public class ListCommand : ItemManagers.ListCommand<IOperationManager, OperationSettings, Package<IOperation>>
     {
+        public override string Name => "operation.list";
+
         public override Task<IOperationManager> GetManager(PipelineContext pipeline)
         {
             IWorkspace workspace = pipeline.Services.GetWorkspace();
             return Task.FromResult(workspace.Operations);
         }
 
-        public override async Task RenderItems(ITerminal terminal, IAsyncEnumerable<(string, Package<BaseOperation>?)> items, PipelineContext pipeline)
+        public override async Task RenderItems(ITerminal terminal, IAsyncEnumerable<(string, Package<IOperation>?)> items, PipelineContext pipeline)
         {
-            List<(string, Package<BaseOperation>?)> sources = new List<(string, Package<BaseOperation>?)>();
-            await foreach ((string, Package<BaseOperation>?) v in items)
+            List<(string, Package<IOperation>?)> sources = new List<(string, Package<IOperation>?)>();
+            await foreach ((string, Package<IOperation>?) v in items)
                 sources.Add(v);
             terminal.OutputTable(sources,
-                new OutputTableColumnStringView<(string, Package<BaseOperation>?)>(x => x.Item1, "Name"),
-                new OutputTableColumnStringView<(string, Package<BaseOperation>?)>(x => x.Item2?.Metadata?.Name ?? "N/A", nameof(PackageMetadata.Name)),
-                new OutputTableColumnStringView<(string, Package<BaseOperation>?)>(x => x.Item2?.Metadata?.Author ?? "N/A", nameof(PackageMetadata.Author)),
-                new OutputTableColumnStringView<(string, Package<BaseOperation>?)>(x => x.Item2?.Metadata?.CreationTime.ToString() ?? "N/A", nameof(PackageMetadata.CreationTime)),
-                new OutputTableColumnStringView<(string, Package<BaseOperation>?)>(x => x.Item2?.Metadata?.Version.ToString() ?? "N/A", nameof(PackageMetadata.Version))
+                new OutputTableColumnStringView<(string, Package<IOperation>?)>(x => x.Item1, "Name"),
+                new OutputTableColumnStringView<(string, Package<IOperation>?)>(x => x.Item2?.Metadata?.Name ?? "N/A", nameof(PackageMetadata.Name)),
+                new OutputTableColumnStringView<(string, Package<IOperation>?)>(x => x.Item2?.Metadata?.Author ?? "N/A", nameof(PackageMetadata.Author)),
+                new OutputTableColumnStringView<(string, Package<IOperation>?)>(x => x.Item2?.Metadata?.CreationTime.ToString() ?? "N/A", nameof(PackageMetadata.CreationTime)),
+                new OutputTableColumnStringView<(string, Package<IOperation>?)>(x => x.Item2?.Metadata?.Version.ToString() ?? "N/A", nameof(PackageMetadata.Version))
             );
         }
     }

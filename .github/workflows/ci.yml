@@ -67,6 +67,7 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         config: [Release]
+        versionSuffix: [pre2]
     runs-on: ${{ matrix.os }}
     steps:
     - name: Checkout
@@ -87,9 +88,10 @@ jobs:
     - name: Generate artifacts
       env:
         CONFIG: ${{ matrix.config }}
+        SUFFIX: ${{ matrix.versionSuffix }}
       run: |
         mkdir artifacts
-        dotnet pack -c $env:CONFIG -o ./packages
+        dotnet pack -c $env:CONFIG --version-suffix $env:SUFFIX -o ./packages
       shell: pwsh
     - name: Upload artifacts
       uses: actions/upload-artifact@master
@@ -100,7 +102,8 @@ jobs:
       if: github.event_name == 'push'
       env:
         MYGET_TOKEN: ${{ secrets.MYGET_TOKEN }}
+        SUFFIX: ${{ matrix.versionSuffix }}
       run: |
-        dotnet nuget push ./packages/CodeRunner.Extensions.Builtin.Console.0.0.1-pre.nupkg -k $env:MYGET_TOKEN -s https://www.myget.org/F/stardustdl/api/v2/package
-        dotnet nuget push ./packages/CodeRunner.Extensions.Builtin.Workspace.0.0.1-pre.nupkg -k $env:MYGET_TOKEN -s https://www.myget.org/F/stardustdl/api/v2/package
+        dotnet nuget push ./packages/CodeRunner.Extensions.Builtin.Console.0.0.1-$env:SUFFIX.nupkg -k $env:MYGET_TOKEN -s https://www.myget.org/F/stardustdl/api/v2/package
+        dotnet nuget push ./packages/CodeRunner.Extensions.Builtin.Workspace.0.0.1-$env:SUFFIX.nupkg -k $env:MYGET_TOKEN -s https://www.myget.org/F/stardustdl/api/v2/package
       shell: pwsh

@@ -21,7 +21,7 @@ namespace CodeRunner.Managements.FSBased
 
         public Workspace(DirectoryInfo pathRoot) : base(pathRoot, new Lazy<DirectoryTemplate>(() => new WorkspaceTemplate()))
         {
-            Assert.IsNotNull(pathRoot);
+            Assert.ArgumentNotNull(pathRoot, nameof(pathRoot));
 
             CRRoot = new DirectoryInfo(Path.Join(pathRoot.FullName, PCRRoot));
             Templates = new TemplateManager(new DirectoryInfo(Path.Join(CRRoot.FullName, PTemplatesRoot)));
@@ -53,9 +53,9 @@ namespace CodeRunner.Managements.FSBased
             await Operations.Initialize().ConfigureAwait(false);
         }
 
-        public async Task<IWorkItem?> Create(string name, BaseTemplate? from, Func<VariableCollection, ResolveContext, Task> resolveCallback)
+        public async Task<IWorkItem?> Create(string name, ITemplate? from, Func<VariableCollection, ResolveContext, Task> resolveCallback)
         {
-            Assert.IsNotNull(resolveCallback);
+            Assert.ArgumentNotNull(resolveCallback, nameof(resolveCallback));
             ResolveContext context = new ResolveContext()
                 .WithVariable(nameof(name), name)
                 .WithVariable(DirectoryTemplate.Var, PathRoot.FullName);
@@ -87,10 +87,10 @@ namespace CodeRunner.Managements.FSBased
             return res;
         }
 
-        public async Task<PipelineResult<Wrapper<bool>>> Execute(IWorkItem? workItem, BaseOperation from, Func<VariableCollection, ResolveContext, Task> resolveCallback, OperationWatcher watcher, ILogger logger)
+        public async Task<PipelineResult<Wrapper<bool>>> Execute(IWorkItem? workItem, IOperation from, Func<VariableCollection, ResolveContext, Task> resolveCallback, OperationWatcher watcher, ILogger logger)
         {
-            Assert.IsNotNull(from);
-            Assert.IsNotNull(resolveCallback);
+            Assert.ArgumentNotNull(from, nameof(from));
+            Assert.ArgumentNotNull(resolveCallback, nameof(resolveCallback));
 
             ResolveContext context = new ResolveContext();
             WorkspaceSettings? settings = await Settings.ConfigureAwait(false);

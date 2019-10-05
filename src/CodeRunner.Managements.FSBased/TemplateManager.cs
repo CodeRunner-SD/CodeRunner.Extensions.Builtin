@@ -5,7 +5,7 @@ using System.IO;
 
 namespace CodeRunner.Managements.FSBased
 {
-    public class TemplateManager : ItemManager<TemplateSettings, BaseTemplate>, ITemplateManager
+    public class TemplateManager : ItemManager<TemplateSettings, ITemplate>, ITemplateManager
     {
         public TemplateManager(DirectoryInfo pathRoot) : base(pathRoot, new System.Lazy<DirectoryTemplate>(() => new TemplatesSpaceTemplate()))
         {

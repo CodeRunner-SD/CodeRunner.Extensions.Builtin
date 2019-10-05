@@ -11,6 +11,8 @@ namespace CodeRunner.Extensions.Builtin.Console.Commands
     [Export]
     public class ClearCommand : BaseCommand<ClearCommand.CArgument>
     {
+        public override string Name => "clear";
+
         public override Command Configure()
         {
             Command res = new Command("clear", "Clear screen.");

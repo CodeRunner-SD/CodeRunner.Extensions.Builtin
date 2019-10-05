@@ -10,6 +10,8 @@ namespace CodeRunner.Extensions.Builtin.Workspace.Commands
     [Export]
     public class OperationCommand : BaseCommand<OperationCommand.CArgument>
     {
+        public override string Name => "operation";
+
         public override Command Configure()
         {
             Command res = new Command("operation", "Manage operations.");

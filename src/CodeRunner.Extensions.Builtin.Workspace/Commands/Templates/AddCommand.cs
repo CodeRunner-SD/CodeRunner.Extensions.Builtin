@@ -9,12 +9,14 @@ using System.Threading.Tasks;
 
 namespace CodeRunner.Extensions.Builtin.Workspace.Commands.Templates
 {
-    public class AddCommand : ItemManagers.AddCommand<ITemplateManager, TemplateSettings, Package<BaseTemplate>>
+    public class AddCommand : ItemManagers.AddCommand<ITemplateManager, TemplateSettings, Package<ITemplate>>
     {
-        public override async Task<Package<BaseTemplate>> GetItem(FileInfo file)
+        public override string Name => "template.add";
+
+        public override async Task<Package<ITemplate>> GetItem(FileInfo file)
         {
             using FileStream st = file.OpenRead();
-            return await Package.Load<BaseTemplate>(st);
+            return await Package.Load<ITemplate>(st);
         }
 
         public override Task<ITemplateManager> GetManager(PipelineContext pipeline)

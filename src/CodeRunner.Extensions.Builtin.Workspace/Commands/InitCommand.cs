@@ -15,6 +15,8 @@ namespace CodeRunner.Extensions.Builtin.Workspace.Commands
     [Export]
     public class InitCommand : BaseCommand<InitCommand.CArgument>
     {
+        public override string Name => "init";
+
         public override Command Configure()
         {
             Command res = new Command("init", "Initialize or uninitialize code-runner directory.");
@@ -51,7 +53,7 @@ namespace CodeRunner.Extensions.Builtin.Workspace.Commands
                 await workspace.Templates.SetValue("fsharp", Resources.Programming.FileTemplates.FSharp);
                 await workspace.Templates.SetValue("go", Resources.Programming.FileTemplates.Go);
                 await workspace.Templates.SetValue("java", Resources.Programming.FileTemplates.Java);
-                await workspace.Templates.SetValue("dir", new Package<BaseTemplate>(FileBasedCommandLineOperation.GetDirectoryTemplate()));
+                await workspace.Templates.SetValue("dir", new Package<ITemplate>(FileBasedCommandLineOperation.GetDirectoryTemplate()));
 
                 await workspace.Operations.SetValue("c", Resources.Programming.FileOperations.C);
                 await workspace.Operations.SetValue("python", Resources.Programming.FileOperations.Python);
@@ -60,7 +62,7 @@ namespace CodeRunner.Extensions.Builtin.Workspace.Commands
                 await workspace.Operations.SetValue("go", Resources.Programming.FileOperations.Go);
                 await workspace.Operations.SetValue("ruby", Resources.Programming.FileOperations.Ruby);
                 await workspace.Operations.SetValue("javascript", Resources.Programming.FileOperations.JavaScript);
-                await workspace.Operations.SetValue("dir", new Package<BaseOperation>(new FileBasedCommandLineOperation()));
+                await workspace.Operations.SetValue("dir", new Package<IOperation>(new FileBasedCommandLineOperation()));
             }
             return 0;
         }

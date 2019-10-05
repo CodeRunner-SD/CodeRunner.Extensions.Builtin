@@ -4,7 +4,7 @@
     <TargetFramework>netcoreapp3.0</TargetFramework>
     <LangVersion>8.0</LangVersion>
     <Nullable>enable</Nullable>
-    <Version>0.0.1-pre</Version>
+    <VersionPrefix>0.0.1</VersionPrefix>
     <Authors>StardustDL</Authors>
     <Product>CodeRunner.Extensions.Builtin.Console</Product>
     <Copyright>Copyright (c) StardustDL. All rights reserved.</Copyright>
@@ -18,11 +18,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CodeRunner.Core" Version="0.0.1-pre" />
+    <PackageReference Include="CodeRunner.Core" Version="0.0.1-pre2" />
     <PackageReference Include="CodeRunner.Extensions.Core" Version="0.0.1-pre2">
       <ExcludeAssets>runtime</ExcludeAssets>
     </PackageReference>
-    <PackageReference Include="CodeRunner.Extensions.Helpers" Version="0.0.1-pre" />
+    <PackageReference Include="CodeRunner.Extensions.Helpers" Version="0.0.1-pre2" />
   </ItemGroup>
 
 </Project>

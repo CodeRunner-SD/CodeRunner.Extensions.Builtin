@@ -13,6 +13,6 @@ namespace CodeRunner.Extensions.Builtin.Workspace
 
         public string Description => "Add core generic workspace commands.";
 
-        public Version Version => new Version(1, 0);
+        public Version Version => new Version(0, 0, 1);
     }
 }

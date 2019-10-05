@@ -8,7 +8,7 @@ namespace CodeRunner.Resources.Programming
 {
     public static class FileOperations
     {
-        private static Package<BaseOperation> Create(string name, params CommandLineTemplate[] items) => new Package<BaseOperation>(new SimpleCommandLineOperation(items))
+        private static Package<IOperation> Create(string name, params CommandLineTemplate[] items) => new Package<IOperation>(new SimpleCommandLineOperation(items))
         {
             Metadata = new PackageMetadata
             {
@@ -33,7 +33,7 @@ namespace CodeRunner.Resources.Programming
                 }
         );
 
-        public static Package<BaseOperation> C => Create("c",
+        public static Package<IOperation> C => Create("c",
                     new CommandLineTemplate()
                         .UseCommand("gcc")
                         .UseArgument(source)
@@ -43,7 +43,7 @@ namespace CodeRunner.Resources.Programming
                     new CommandLineTemplate()
                         .UseCommand(output));
 
-        public static Package<BaseOperation> Cpp => Create("cpp",
+        public static Package<IOperation> Cpp => Create("cpp",
                     new CommandLineTemplate()
                         .UseCommand("g++")
                         .UseArgument(source)
@@ -53,7 +53,7 @@ namespace CodeRunner.Resources.Programming
                     new CommandLineTemplate()
                         .UseCommand(output));
 
-        public static Package<BaseOperation> CSharp => Create("csharp",
+        public static Package<IOperation> CSharp => Create("csharp",
                    new CommandLineTemplate()
                        .UseCommand("csc")
                        .UseArgument(source)
@@ -62,23 +62,23 @@ namespace CodeRunner.Resources.Programming
                    new CommandLineTemplate()
                        .UseCommand(output));
 
-        public static Package<BaseOperation> Python => Create("python",
+        public static Package<IOperation> Python => Create("python",
                     new CommandLineTemplate()
                         .UseCommand("python")
                         .UseArgument(source));
 
-        public static Package<BaseOperation> Ruby => Create("ruby",
+        public static Package<IOperation> Ruby => Create("ruby",
                     new CommandLineTemplate()
                         .UseCommand("ruby")
                         .UseArgument(source));
 
-        public static Package<BaseOperation> Go => Create("go",
+        public static Package<IOperation> Go => Create("go",
                     new CommandLineTemplate()
                         .UseCommand("go")
                         .UseCommand("run")
                         .UseArgument(source));
 
-        public static Package<BaseOperation> JavaScript => Create("javascript",
+        public static Package<IOperation> JavaScript => Create("javascript",
                     new CommandLineTemplate()
                         .UseCommand("node")
                         .UseArgument(source));

@@ -8,8 +8,10 @@ using System.Threading.Tasks;
 
 namespace CodeRunner.Extensions.Builtin.Workspace.Commands.Templates
 {
-    public class RemoveCommand : ItemManagers.RemoveCommand<ITemplateManager, TemplateSettings, Package<BaseTemplate>>
+    public class RemoveCommand : ItemManagers.RemoveCommand<ITemplateManager, TemplateSettings, Package<ITemplate>>
     {
+        public override string Name => "template.remove";
+
         public override Task<ITemplateManager> GetManager(PipelineContext pipeline)
         {
             IWorkspace workspace = pipeline.Services.GetWorkspace();

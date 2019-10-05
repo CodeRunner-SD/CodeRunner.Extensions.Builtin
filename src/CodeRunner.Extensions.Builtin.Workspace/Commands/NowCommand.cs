@@ -14,6 +14,8 @@ namespace CodeRunner.Extensions.Builtin.Workspace.Commands
     [Export]
     public class NowCommand : BaseCommand<NowCommand.CArgument>
     {
+        public override string Name => "now";
+
         public override Command Configure()
         {
             Command res = new Command("now", "Set current work-item.")

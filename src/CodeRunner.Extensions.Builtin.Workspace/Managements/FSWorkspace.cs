@@ -2,8 +2,6 @@
 using CodeRunner.Managements;
 using CodeRunner.Templates;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace CodeRunner.Extensions.Builtin.Workspace.Managements
@@ -13,7 +11,7 @@ namespace CodeRunner.Extensions.Builtin.Workspace.Managements
     {
         public string Name => "fs";
 
-        public BaseTemplate<IWorkspace> Provider => new FunctionBasedTemplate<IWorkspace>(context =>
+        public ITemplate<IWorkspace> GetProvider() => new FunctionBasedTemplate<IWorkspace>(context =>
         {
             CodeRunner.Managements.FSBased.Workspace res = new CodeRunner.Managements.FSBased.Workspace(new System.IO.DirectoryInfo(Environment.CurrentDirectory));
             return Task.FromResult<IWorkspace>(res);

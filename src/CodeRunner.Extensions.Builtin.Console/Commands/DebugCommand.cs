@@ -45,6 +45,8 @@ namespace CodeRunner.Extensions.Builtin.Console.Commands
     [Export]
     public class DebugCommand : BaseCommand<DebugCommand.CArgument>
     {
+        public override string Name => "debug";
+
         public override Command Configure()
         {
             Command res = new Command("debug", "Get information for debug.");

@@ -9,12 +9,14 @@ using System.Threading.Tasks;
 
 namespace CodeRunner.Extensions.Builtin.Workspace.Commands.Operations
 {
-    public class AddCommand : ItemManagers.AddCommand<IOperationManager, OperationSettings, Package<BaseOperation>>
+    public class AddCommand : ItemManagers.AddCommand<IOperationManager, OperationSettings, Package<IOperation>>
     {
-        public override async Task<Package<BaseOperation>> GetItem(FileInfo file)
+        public override string Name => "operation.add";
+
+        public override async Task<Package<IOperation>> GetItem(FileInfo file)
         {
             using FileStream st = file.OpenRead();
-            return await Package.Load<BaseOperation>(st);
+            return await Package.Load<IOperation>(st);
         }
 
         public override Task<IOperationManager> GetManager(PipelineContext pipeline)

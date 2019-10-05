@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CodeRunner.Managements.FSBased
 {
-    public class OperationManager : ItemManager<OperationSettings, BaseOperation>, IOperationManager
+    public class OperationManager : ItemManager<OperationSettings, IOperation>, IOperationManager
     {
         public OperationManager(DirectoryInfo pathRoot) : base(pathRoot, new System.Lazy<CodeRunner.Templates.DirectoryTemplate>(() => new OperationsSpaceTemplate()))
         {
