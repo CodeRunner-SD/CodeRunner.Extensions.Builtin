@@ -1,7 +1,6 @@
-﻿using CodeRunner.Managements;
+﻿using CodeRunner.Commands;
+using CodeRunner.Managements;
 using CodeRunner.Pipelines;
-using System.CommandLine;
-using System.CommandLine.Invocation;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -23,18 +22,18 @@ namespace CodeRunner.Extensions.Builtin.Workspace.Commands.ItemManagers
         public override Command Configure()
         {
             Command res = new Command("remove", "Remove item.");
-            res.AddAlias("rm");
+            res.Aliases.Add("rm");
             {
                 Argument<string> arg = new Argument<string>(nameof(RemoveCommand.CArgument.Name))
                 {
                     Arity = ArgumentArity.ExactlyOne
                 };
-                res.AddArgument(arg);
+                res.Arguments.Add(arg);
             }
             return res;
         }
 
-        protected override async Task<int> Handle(RemoveCommand.CArgument argument, IConsole console, InvocationContext context, PipelineContext operation, CancellationToken cancellationToken)
+        public override async Task<int> Handle(RemoveCommand.CArgument argument, ParserContext parser, PipelineContext operation, CancellationToken cancellationToken)
         {
             await (await GetManager(operation)).SetValue(argument.Name, null);
             return 0;

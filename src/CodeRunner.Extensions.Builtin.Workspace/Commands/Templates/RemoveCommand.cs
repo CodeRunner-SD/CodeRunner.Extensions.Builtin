@@ -1,7 +1,7 @@
 ﻿using CodeRunner.Extensions.Helpers;
 using CodeRunner.Managements;
 using CodeRunner.Managements.Configurations;
-using CodeRunner.Packagings;
+using CodeRunner.Packaging;
 using CodeRunner.Pipelines;
 using CodeRunner.Templates;
 using System.Threading.Tasks;

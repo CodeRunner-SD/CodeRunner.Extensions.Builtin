@@ -67,7 +67,7 @@ jobs:
       matrix:
         os: [ubuntu-latest]
         config: [Release]
-        versionSuffix: [pre2]
+        versionSuffix: [pre4]
     runs-on: ${{ matrix.os }}
     steps:
     - name: Checkout

@@ -1,8 +1,8 @@
-﻿using CodeRunner.Extensions.Commands;
+﻿using CodeRunner.Commands;
+using CodeRunner.Extensions.Commands;
+using CodeRunner.Extensions.Helpers;
+using CodeRunner.Extensions.Terminals;
 using CodeRunner.Pipelines;
-using System.CommandLine;
-using System.CommandLine.Invocation;
-using System.CommandLine.Rendering;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -19,16 +19,10 @@ namespace CodeRunner.Extensions.Builtin.Console.Commands
             return res;
         }
 
-        protected override Task<int> Handle(CArgument argument, IConsole console, InvocationContext context, PipelineContext pipeline, CancellationToken cancellationToken)
+        public override Task<int> Handle(CArgument argument, ParserContext parser, PipelineContext pipeline, CancellationToken cancellationToken)
         {
-            ITerminal terminal = console.GetTerminal();
+            ITerminal terminal = pipeline.Services.GetTerminal();
             terminal.Clear();
-            terminal.SetCursorPosition(0, 0);
-            if (console is SystemConsole)
-            {
-                System.Console.Clear();
-                System.Console.SetCursorPosition(0, 0);
-            }
             return Task.FromResult(0);
         }
 

@@ -1,9 +1,9 @@
-﻿using CodeRunner.Managements;
+﻿using CodeRunner.Commands;
+using CodeRunner.Extensions.Helpers;
+using CodeRunner.Extensions.Terminals;
+using CodeRunner.Managements;
 using CodeRunner.Pipelines;
 using System.Collections.Generic;
-using System.CommandLine;
-using System.CommandLine.Invocation;
-using System.CommandLine.Rendering;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -29,7 +29,7 @@ namespace CodeRunner.Extensions.Builtin.Workspace.Commands.ItemManagers
 
         public abstract Task RenderItems(ITerminal terminal, IAsyncEnumerable<(string, TItem?)> items, PipelineContext pipeline);
 
-        protected override async Task<int> Handle(ListCommand.CArgument argument, IConsole console, InvocationContext context, PipelineContext pipeline, CancellationToken cancellationToken)
+        public override async Task<int> Handle(ListCommand.CArgument argument, ParserContext parser, PipelineContext pipeline, CancellationToken cancellationToken)
         {
             static async IAsyncEnumerable<(string, TItem?)> GetAllItems(TItemManager manager)
             {
@@ -39,7 +39,7 @@ namespace CodeRunner.Extensions.Builtin.Workspace.Commands.ItemManagers
                 }
             }
 
-            ITerminal terminal = console.GetTerminal();
+            ITerminal terminal = pipeline.Services.GetTerminal();
             TItemManager manager = await GetManager(pipeline);
             await RenderItems(terminal, GetAllItems(manager), pipeline);
             return 0;

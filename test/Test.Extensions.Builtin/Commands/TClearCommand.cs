@@ -1,8 +1,8 @@
 ﻿using CodeRunner.Extensions.Builtin.Console.Commands;
 using CodeRunner.Pipelines;
+using CodeRunner.Test.Commands;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading.Tasks;
-using Test.App.Mocks;
 
 namespace Test.Extensions.Builtin
 {
@@ -12,13 +12,11 @@ namespace Test.Extensions.Builtin
         [TestMethod]
         public async Task Basic()
         {
-            TestWorkspace workspace = new TestWorkspace();
-            PipelineResult<Wrapper<int>> result = await Utils.UseSampleCommandInvoker(workspace,
+            PipelineResult<Wrapper<int>> result = await PipelineGenerator.CreateBuilder().UseSampleCommandInvoker(
                 new ClearCommand().Build(),
                 new string[] { "clear" });
 
-            Assert.IsTrue(result.IsOk);
-            Assert.AreEqual<int>(0, result.Result!);
+            ResultAssert.OkWithZero(result);
         }
     }
 }

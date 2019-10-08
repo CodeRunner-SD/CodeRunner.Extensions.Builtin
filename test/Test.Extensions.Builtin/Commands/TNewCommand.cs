@@ -1,11 +1,14 @@
 ﻿using CodeRunner.Extensions.Builtin.Workspace.Commands;
 using CodeRunner.Extensions.Helpers;
+using CodeRunner.Loggings;
 using CodeRunner.Managements;
 using CodeRunner.Pipelines;
 using CodeRunner.Resources.Programming;
+using CodeRunner.Test;
+using CodeRunner.Test.Commands;
+using CodeRunner.Test.Mocks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading.Tasks;
-using Test.App.Mocks;
 
 namespace Test.Extensions.Builtin
 {
@@ -15,24 +18,20 @@ namespace Test.Extensions.Builtin
         [TestMethod]
         public async Task Basic()
         {
-            TestWorkspace workspace = new TestWorkspace();
-            PipelineResult<Wrapper<int>> result = await Utils.UseSampleCommandInvoker(workspace,
+            Logger logger = new Logger();
+            TestWorkspace workspace = new TestWorkspace(logger.CreateScope("main", LogLevel.Debug));
+            PipelineResult<Wrapper<int>> result = await PipelineGenerator.CreateBuilder().UseSampleCommandInvoker(
                 new NewCommand().Build(),
                 new string[] { "new", "c", "a" },
+                workspace: workspace,
                 before: async context =>
                 {
-                    _ = await Utils.InitializeWorkspace(context);
+                    _ = await PipelineGenerator.InitializeWorkspace(context);
                     await context.Services.GetWorkspace().Templates.SetValue("c", FileTemplates.C);
-                    return 0;
-                },
-                after: context =>
-                {
-                    workspace.AssertInvoked(nameof(IWorkspace.Create));
-                    return Task.FromResult<Wrapper<int>>(0);
                 });
 
-            Assert.IsTrue(result.IsOk);
-            Assert.AreEqual<int>(0, result.Result!);
+            logger.AssertInvoked(nameof(IWorkspace.Create));
+            ResultAssert.OkWithZero(result);
         }
     }
 }

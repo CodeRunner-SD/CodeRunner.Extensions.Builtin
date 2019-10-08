@@ -1,12 +1,12 @@
 ﻿using CodeRunner.Extensions.Helpers;
-using CodeRunner.Extensions.Helpers.Rendering;
+using CodeRunner.Extensions.Terminals;
+using CodeRunner.Extensions.Terminals.Rendering;
 using CodeRunner.Managements;
 using CodeRunner.Managements.Configurations;
 using CodeRunner.Operations;
-using CodeRunner.Packagings;
+using CodeRunner.Packaging;
 using CodeRunner.Pipelines;
 using System.Collections.Generic;
-using System.CommandLine.Rendering;
 using System.Threading.Tasks;
 
 namespace CodeRunner.Extensions.Builtin.Workspace.Commands.Operations
@@ -26,7 +26,7 @@ namespace CodeRunner.Extensions.Builtin.Workspace.Commands.Operations
             List<(string, Package<IOperation>?)> sources = new List<(string, Package<IOperation>?)>();
             await foreach ((string, Package<IOperation>?) v in items)
                 sources.Add(v);
-            terminal.OutputTable(sources,
+            terminal.Output.WriteTable(sources,
                 new OutputTableColumnStringView<(string, Package<IOperation>?)>(x => x.Item1, "Name"),
                 new OutputTableColumnStringView<(string, Package<IOperation>?)>(x => x.Item2?.Metadata?.Name ?? "N/A", nameof(PackageMetadata.Name)),
                 new OutputTableColumnStringView<(string, Package<IOperation>?)>(x => x.Item2?.Metadata?.Author ?? "N/A", nameof(PackageMetadata.Author)),

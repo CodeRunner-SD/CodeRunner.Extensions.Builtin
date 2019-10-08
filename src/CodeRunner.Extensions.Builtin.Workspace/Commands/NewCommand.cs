@@ -1,13 +1,12 @@
-﻿using CodeRunner.Extensions.Commands;
+﻿using CodeRunner.Commands;
+using CodeRunner.Extensions.Commands;
 using CodeRunner.Extensions.Helpers;
-using CodeRunner.Extensions.Helpers.Rendering;
+using CodeRunner.Extensions.Terminals;
 using CodeRunner.Managements;
+using CodeRunner.Packaging;
 using CodeRunner.Pipelines;
 using CodeRunner.Templates;
 using System;
-using System.CommandLine;
-using System.CommandLine.Invocation;
-using System.CommandLine.Rendering;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -20,42 +19,39 @@ namespace CodeRunner.Extensions.Builtin.Workspace.Commands
 
         public override Command Configure()
         {
-            Command res = new Command("new", "Create new item from template.")
-            {
-                TreatUnmatchedTokensAsErrors = false
-            };
+            Command res = new Command("new", "Create new item from template.");
             {
                 Argument<string> argTemplate = new Argument<string>(nameof(CArgument.Template))
                 {
                     Arity = ArgumentArity.ExactlyOne,
                 };
-                res.AddArgument(argTemplate);
+                res.Arguments.Add(argTemplate);
             }
             {
                 Argument<string> argTemplate = new Argument<string>(nameof(CArgument.Name))
                 {
                     Arity = ArgumentArity.ExactlyOne,
                 };
-                res.AddArgument(argTemplate);
+                res.Arguments.Add(argTemplate);
             }
             return res;
         }
 
-        protected override async Task<int> Handle(CArgument argument, IConsole console, InvocationContext context, PipelineContext pipeline, CancellationToken cancellationToken)
+        public override async Task<int> Handle(CArgument argument, ParserContext parser, PipelineContext pipeline, CancellationToken cancellationToken)
         {
             IWorkspace workspace = pipeline.Services.GetWorkspace();
-            ITerminal terminal = console.GetTerminal();
+            ITerminal terminal = pipeline.Services.GetTerminal();
             string template = argument.Template;
-            Packagings.Package<ITemplate>? tplItem = await workspace.Templates.GetValue(template);
+            Package<ITemplate>? tplItem = await workspace.Templates.GetValue(template);
             if (tplItem == null)
             {
-                terminal.OutputErrorLine($"No this template: {template}.");
+                terminal.Output.WriteErrorLine($"No this template: {template}.");
                 return 1;
             }
             ITemplate? tpl = tplItem.Data;
             if (tpl == null)
             {
-                terminal.OutputErrorLine($"Can not load this template: {template}.");
+                terminal.Output.WriteErrorLine($"Can not load this template: {template}.");
                 return 1;
             }
 
@@ -63,7 +59,7 @@ namespace CodeRunner.Extensions.Builtin.Workspace.Commands
             try
             {
                 item = await workspace.Create(argument.Name, tpl,
-                    (vars, resolveContext) => Utils.ResolveCallback(vars, resolveContext, context, pipeline));
+                    (vars, resolveContext) => Utils.ResolveCallback(vars, resolveContext, parser, pipeline));
             }
             catch (ArgumentException)
             {

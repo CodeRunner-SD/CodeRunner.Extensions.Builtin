@@ -1,16 +1,15 @@
-﻿using CodeRunner.Extensions.Commands;
+﻿using CodeRunner.Commands;
+using CodeRunner.Extensions.Commands;
 using CodeRunner.Extensions.Helpers;
 using CodeRunner.Extensions.Helpers.Rendering;
+using CodeRunner.Extensions.Terminals;
 using CodeRunner.Loggings;
 using CodeRunner.Managements;
 using CodeRunner.Operations;
+using CodeRunner.Packaging;
 using CodeRunner.Pipelines;
 using System;
 using System.Collections.Generic;
-using System.CommandLine;
-using System.CommandLine.Invocation;
-using System.CommandLine.Rendering;
-using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.Threading.Tasks;
@@ -33,7 +32,7 @@ namespace CodeRunner.Extensions.Builtin.Workspace.Commands
             public void Log(LogItem item,
                 [CallerMemberName] string memberName = "",
                 [CallerFilePath] string sourceFilePath = "",
-                [CallerLineNumber] int sourceLineNumber = 0) => Terminal.OutputLine(item.Content);
+                [CallerLineNumber] int sourceLineNumber = 0) => Terminal.Output.WriteLine(item.Content);
 
             public ILogger UseFilter(LogFilter filter) => this;
 
@@ -42,38 +41,33 @@ namespace CodeRunner.Extensions.Builtin.Workspace.Commands
 
         public override Command Configure()
         {
-            Command res = new Command("run", "Run operation.")
+            Command res = new Command("run", "Run operation.");
             {
-                TreatUnmatchedTokensAsErrors = false
-            };
-            {
-                Argument<string> argOperator = new Argument<string>()
+                Argument<string> argOperator = new Argument<string>(nameof(CArgument.Operation))
                 {
-                    Name = nameof(CArgument.Operation),
                     Arity = ArgumentArity.ExactlyOne,
                 };
-                res.AddArgument(argOperator);
+                res.Arguments.Add(argOperator);
             }
 
             return res;
         }
 
-        protected override async Task<int> Handle(CArgument argument, IConsole console, InvocationContext context, PipelineContext pipeline, CancellationToken cancellationToken)
+        public override async Task<int> Handle(CArgument argument, ParserContext parser, PipelineContext pipeline, CancellationToken cancellationToken)
         {
             IWorkspace workspace = pipeline.Services.GetWorkspace();
-            TextReader input = pipeline.Services.GetInput();
-            ITerminal terminal = console.GetTerminal();
+            ITerminal terminal = pipeline.Services.GetTerminal();
             string op = argument.Operation;
-            Packagings.Package<IOperation>? tplItem = await workspace.Operations.GetValue(op);
+            Package<IOperation>? tplItem = await workspace.Operations.GetValue(op);
             if (tplItem == null)
             {
-                terminal.OutputErrorLine($"No this operation: {op}.");
+                terminal.Output.WriteErrorLine($"No this operation: {op}.");
                 return 1;
             }
             IOperation? tpl = tplItem.Data;
             if (tpl == null)
             {
-                terminal.OutputErrorLine($"Can not load this operation: {op}.");
+                terminal.Output.WriteErrorLine($"Can not load this operation: {op}.");
                 return 1;
             }
 
@@ -131,8 +125,8 @@ namespace CodeRunner.Extensions.Builtin.Workspace.Commands
                 IWorkItem? workItem = pipeline.Services.GetWorkItem();
                 item = await workspace.Execute(workItem, tpl, (vars, resolveContext) =>
                 {
-                    _ = resolveContext.FromArgumentList(context.ParseResult.UnparsedTokens);
-                    if (!terminal.FillVariables(input, tpl.GetVariables(), resolveContext))
+                    _ = resolveContext.FromArgumentList(parser.UnparsedTokens);
+                    if (!terminal.FillVariables(tpl.GetVariables(), resolveContext))
                         throw new ArgumentException();
                     return Task.CompletedTask;
                 }, new OperationWatcher(), new ConsoleLogger(terminal));

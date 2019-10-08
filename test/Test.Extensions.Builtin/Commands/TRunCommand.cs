@@ -3,10 +3,12 @@ using CodeRunner.Extensions.Helpers;
 using CodeRunner.Loggings;
 using CodeRunner.Managements;
 using CodeRunner.Pipelines;
+using CodeRunner.Test;
+using CodeRunner.Test.Commands;
+using CodeRunner.Test.Mocks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using System.Threading.Tasks;
-using Test.App.Mocks;
 
 namespace Test.Extensions.Builtin
 {
@@ -16,21 +18,22 @@ namespace Test.Extensions.Builtin
         [TestMethod]
         public async Task Basic()
         {
-            TestWorkspace workspace = new TestWorkspace(onExecute: (item, op, call, watcher, logger) => Task.FromResult(new PipelineResult<Wrapper<bool>>(true, null, Array.Empty<LogItem>())));
-            PipelineResult<Wrapper<int>> result = await Utils.UseSampleCommandInvoker(workspace,
+            Logger logger = new Logger();
+            TestWorkspace workspace = new TestWorkspace(logger.CreateScope("main", LogLevel.Debug),
+                onExecute: (item, op, call, watcher, logger) => Task.FromResult(new PipelineResult<Wrapper<bool>>(true, null, Array.Empty<LogItem>())));
+            PipelineResult<Wrapper<int>> result = await PipelineGenerator.CreateBuilder().UseSampleCommandInvoker(
                 new RunCommand().Build(),
                 new string[] { "hello", "--", "name=a" },
+                workspace: workspace,
                 before: async context =>
                 {
-                    _ = await Utils.InitializeWorkspace(context);
+                    _ = await PipelineGenerator.InitializeWorkspace(context);
                     await context.Services.GetWorkspace().Operations.SetValue("hello", CodeRunner.Managements.FSBased.Templates.OperationsSpaceTemplate.Hello);
-                    return 0;
-                },
-                after: context => Task.FromResult<Wrapper<int>>(0));
+                });
 
-            workspace.AssertInvoked(nameof(IWorkspace.Execute));
-            Assert.IsTrue(result.IsOk);
-            Assert.AreEqual<int>(0, result.Result!);
+            logger.AssertInvoked(nameof(IWorkspace.Execute));
+
+            ResultAssert.OkWithZero(result);
         }
     }
 }

@@ -18,11 +18,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CodeRunner.Core" Version="0.0.1-pre2" />
-    <PackageReference Include="CodeRunner.Extensions.Core" Version="0.0.1-pre2">
+    <PackageReference Include="CodeRunner.Core" Version="0.0.1-pre6" />
+    <PackageReference Include="CodeRunner.Extensions.Core" Version="0.0.1-pre6">
       <ExcludeAssets>runtime</ExcludeAssets>
     </PackageReference>
-    <PackageReference Include="CodeRunner.Extensions.Helpers" Version="0.0.1-pre2" />
+    <PackageReference Include="CodeRunner.Extensions.Helpers" Version="0.0.1-pre6" />
   </ItemGroup>
 
 </Project>

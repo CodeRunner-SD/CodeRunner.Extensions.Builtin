@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.0</TargetFramework>
@@ -7,8 +7,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="CodeRunner.Core" Version="0.0.1-pre2" />
-    <PackageReference Include="CodeRunner.Managements.Core" Version="0.0.1-pre2" />
+    <PackageReference Include="CodeRunner.Core" Version="0.0.1-pre6" />
+    <PackageReference Include="CodeRunner.Managements.Core" Version="0.0.1-pre6" />
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.6">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

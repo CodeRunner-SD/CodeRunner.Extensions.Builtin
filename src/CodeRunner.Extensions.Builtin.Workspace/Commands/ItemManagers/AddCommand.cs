@@ -1,7 +1,6 @@
-﻿using CodeRunner.Managements;
+﻿using CodeRunner.Commands;
+using CodeRunner.Managements;
 using CodeRunner.Pipelines;
-using System.CommandLine;
-using System.CommandLine.Invocation;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -31,21 +30,21 @@ namespace CodeRunner.Extensions.Builtin.Workspace.Commands.ItemManagers
                 {
                     Arity = ArgumentArity.ExactlyOne
                 };
-                res.AddArgument(arg);
+                res.Arguments.Add(arg);
             }
             {
                 Argument<FileInfo> arg = new Argument<FileInfo>(nameof(AddCommand.CArgument.File))
                 {
                     Arity = ArgumentArity.ExactlyOne
                 };
-                res.AddArgument(arg);
+                res.Arguments.Add(arg);
             }
             return res;
         }
 
         public abstract Task<TItem> GetItem(FileInfo file);
 
-        protected override async Task<int> Handle(AddCommand.CArgument argument, IConsole console, InvocationContext context, PipelineContext operation, CancellationToken cancellationToken)
+        public override async Task<int> Handle(AddCommand.CArgument argument, ParserContext parser, PipelineContext operation, CancellationToken cancellationToken)
         {
             if (argument.File == null)
                 return -1;
@@ -54,8 +53,7 @@ namespace CodeRunner.Extensions.Builtin.Workspace.Commands.ItemManagers
 
             try
             {
-                await (await GetManager(operation)).SetValue(
-                    argument.Name, item);
+                await (await GetManager(operation)).SetValue(argument.Name, item);
                 return 0;
             }
             catch

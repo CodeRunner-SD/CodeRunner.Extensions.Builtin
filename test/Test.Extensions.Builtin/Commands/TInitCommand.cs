@@ -1,9 +1,12 @@
 ﻿using CodeRunner.Extensions.Builtin.Workspace.Commands;
+using CodeRunner.Loggings;
 using CodeRunner.Managements;
 using CodeRunner.Pipelines;
+using CodeRunner.Test;
+using CodeRunner.Test.Commands;
+using CodeRunner.Test.Mocks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading.Tasks;
-using Test.App.Mocks;
 
 namespace Test.Extensions.Builtin
 {
@@ -13,28 +16,31 @@ namespace Test.Extensions.Builtin
         [TestMethod]
         public async Task Basic()
         {
-            TestWorkspace workspace = new TestWorkspace();
-            PipelineResult<Wrapper<int>> result = await Utils.UseSampleCommandInvoker(workspace,
-                new InitCommand().Build(),
+            Logger logger = new Logger();
+            TestWorkspace workspace = new TestWorkspace(logger.CreateScope("main", LogLevel.Debug));
+            PipelineResult<Wrapper<int>> result = await PipelineGenerator.CreateBuilder().UseSampleCommandInvoker(new InitCommand().Build(),
                 new string[] { "init" },
+                workspace: workspace,
                 after: context => Task.FromResult<Wrapper<int>>(0));
-            workspace.AssertInvoked(nameof(IWorkspace.Initialize));
-            Assert.IsTrue(result.IsOk);
-            Assert.AreEqual<int>(0, result.Result!);
+            logger.AssertInvoked(nameof(IWorkspace.Initialize));
+
+            ResultAssert.OkWithZero(result);
         }
 
         [TestMethod]
         public async Task Delete()
         {
-            TestWorkspace workspace = new TestWorkspace();
-            PipelineResult<Wrapper<int>> result = await Utils.UseSampleCommandInvoker(workspace,
+            Logger logger = new Logger();
+            TestWorkspace workspace = new TestWorkspace(logger.CreateScope("main", LogLevel.Debug));
+            PipelineResult<Wrapper<int>> result = await PipelineGenerator.CreateBuilder().UseSampleCommandInvoker(
                 new InitCommand().Build(),
                 new string[] { "init", "--delete" },
+                workspace: workspace,
                 after: context => Task.FromResult<Wrapper<int>>(0));
 
-            workspace.AssertInvoked(nameof(IWorkspace.Clear));
-            Assert.IsTrue(result.IsOk);
-            Assert.AreEqual<int>(0, result.Result!);
+            logger.AssertInvoked(nameof(IWorkspace.Clear));
+
+            ResultAssert.OkWithZero(result);
         }
     }
 }

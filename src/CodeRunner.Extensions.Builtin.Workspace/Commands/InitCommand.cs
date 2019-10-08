@@ -1,12 +1,11 @@
-﻿using CodeRunner.Extensions.Commands;
+﻿using CodeRunner.Commands;
+using CodeRunner.Extensions.Commands;
 using CodeRunner.Extensions.Helpers;
 using CodeRunner.Managements;
 using CodeRunner.Operations;
-using CodeRunner.Packagings;
+using CodeRunner.Packaging;
 using CodeRunner.Pipelines;
 using CodeRunner.Templates;
-using System.CommandLine;
-using System.CommandLine.Invocation;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -21,7 +20,7 @@ namespace CodeRunner.Extensions.Builtin.Workspace.Commands
         {
             Command res = new Command("init", "Initialize or uninitialize code-runner directory.");
             {
-                Argument<bool> arg = new Argument<bool>(nameof(CArgument.Delete), false)
+                Argument<bool> arg = new Argument<bool>(nameof(CArgument.Delete), "", false)
                 {
                     Arity = ArgumentArity.ZeroOrOne
                 };
@@ -29,12 +28,12 @@ namespace CodeRunner.Extensions.Builtin.Workspace.Commands
                 {
                     Argument = arg
                 };
-                res.AddOption(optCommand);
+                res.Options.Add(optCommand);
             }
             return res;
         }
 
-        protected override async Task<int> Handle(CArgument argument, IConsole console, InvocationContext context, PipelineContext pipeline, CancellationToken cancellationToken)
+        public override async Task<int> Handle(CArgument argument, ParserContext parser, PipelineContext pipeline, CancellationToken cancellationToken)
         {
             IWorkspace workspace = pipeline.Services.GetWorkspace();
             if (argument.Delete)

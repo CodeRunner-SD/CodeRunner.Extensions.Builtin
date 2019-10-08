@@ -1,11 +1,10 @@
-﻿using CodeRunner.Extensions.Commands;
+﻿using CodeRunner.Commands;
+using CodeRunner.Extensions.Commands;
 using CodeRunner.Extensions.Helpers;
-using CodeRunner.Extensions.Helpers.Rendering;
+using CodeRunner.Extensions.Terminals;
+using CodeRunner.Extensions.Terminals.Rendering;
 using CodeRunner.Loggings;
 using CodeRunner.Pipelines;
-using System.CommandLine;
-using System.CommandLine.Invocation;
-using System.CommandLine.Rendering;
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
@@ -24,19 +23,19 @@ namespace CodeRunner.Extensions.Builtin.Console.Commands
             switch (value.Level)
             {
                 case LogLevel.Information:
-                    terminal.OutputInformation(levelStr);
+                    terminal.Output.WriteInformation(levelStr);
                     break;
                 case LogLevel.Warning:
-                    terminal.OutputWarning(levelStr);
+                    terminal.Output.WriteWarning(levelStr);
                     break;
                 case LogLevel.Error:
-                    terminal.OutputError(levelStr);
+                    terminal.Output.WriteError(levelStr);
                     break;
                 case LogLevel.Fatal:
-                    terminal.OutputFatal(levelStr);
+                    terminal.Output.WriteFatal(levelStr);
                     break;
                 case LogLevel.Debug:
-                    terminal.OutputDebug(levelStr);
+                    terminal.Output.WriteDebug(levelStr);
                     break;
             }
         }
@@ -53,12 +52,12 @@ namespace CodeRunner.Extensions.Builtin.Console.Commands
             return res;
         }
 
-        protected override Task<int> Handle(CArgument argument, IConsole console, InvocationContext context, PipelineContext pipeline, CancellationToken cancellationToken)
+        public override Task<int> Handle(CArgument argument, ParserContext parser, PipelineContext pipeline, CancellationToken cancellationToken)
         {
             ILogger logger = pipeline.Services.GetLogger();
-            ITerminal terminal = console.GetTerminal();
+            ITerminal terminal = pipeline.Services.GetTerminal();
             {
-                terminal.OutputTable(logger.View(),
+                terminal.Output.WriteTable(logger.View(),
                     new OutputTableColumnLogLevelView(nameof(LogItem.Level)),
                     new OutputTableColumnStringView<LogItem>(x => x.Scope, nameof(LogItem.Scope)),
                     new OutputTableColumnStringView<LogItem>(x => x.Time.ToString(CultureInfo.InvariantCulture.DateTimeFormat), nameof(LogItem.Time)),

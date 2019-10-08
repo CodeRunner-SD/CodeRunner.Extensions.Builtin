@@ -1,9 +1,12 @@
 ﻿using CodeRunner.Extensions.Builtin.Workspace.Commands;
+using CodeRunner.Loggings;
 using CodeRunner.Managements;
 using CodeRunner.Pipelines;
+using CodeRunner.Test;
+using CodeRunner.Test.Commands;
+using CodeRunner.Test.Mocks;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System.Threading.Tasks;
-using Test.App.Mocks;
 
 namespace Test.Extensions.Builtin
 {
@@ -13,16 +16,16 @@ namespace Test.Extensions.Builtin
         [TestMethod]
         public async Task File()
         {
-            TestWorkspace workspace = new TestWorkspace(
-                onCreate: (name, tem, callback) => Task.FromResult<IWorkItem?>(new TestWorkItem()));
+            Logger logger = new Logger();
+            TestWorkspace workspace = new TestWorkspace(logger.CreateScope("main", LogLevel.Debug),
+                onCreate: (name, tem, callback) => Task.FromResult<IWorkItem?>(new TestWorkItem("")));
 
-            PipelineResult<Wrapper<int>> result = await Utils.UseSampleCommandInvoker(workspace,
+            PipelineResult<Wrapper<int>> result = await PipelineGenerator.CreateBuilder().UseSampleCommandInvoker(
                 new NowCommand().Build(),
                 new string[] { "now", "--", "type=f", "target=a.c" },
-                before: Utils.InitializeWorkspace,
-                after: context => Task.FromResult<Wrapper<int>>(0));
+                workspace: workspace);
 
-            workspace.AssertInvoked(nameof(IWorkspace.Create));
+            logger.AssertInvoked(nameof(IWorkspace.Create));
             Assert.IsTrue(result.IsOk);
             Assert.AreEqual<int>(0, result.Result!);
         }
@@ -30,19 +33,18 @@ namespace Test.Extensions.Builtin
         [TestMethod]
         public async Task Directory()
         {
-            TestWorkspace workspace = new TestWorkspace(
-                onCreate: (name, tem, callback) => Task.FromResult<IWorkItem?>(new TestWorkItem()));
+            Logger logger = new Logger();
+            TestWorkspace workspace = new TestWorkspace(logger.CreateScope("main", LogLevel.Debug),
+                onCreate: (name, tem, callback) => Task.FromResult<IWorkItem?>(new TestWorkItem("")));
 
-            PipelineResult<Wrapper<int>> result = await Utils.UseSampleCommandInvoker(workspace,
+            PipelineResult<Wrapper<int>> result = await PipelineGenerator.CreateBuilder().UseSampleCommandInvoker(
                 new NowCommand().Build(),
                 new string[] { "now", "--", "type=d", "target=a" },
-                before: Utils.InitializeWorkspace,
-                after: context => Task.FromResult<Wrapper<int>>(0));
+                workspace: workspace);
 
-            workspace.AssertInvoked(nameof(IWorkspace.Create));
+            logger.AssertInvoked(nameof(IWorkspace.Create));
 
-            Assert.IsTrue(result.IsOk);
-            Assert.AreEqual<int>(0, result.Result!);
+            ResultAssert.OkWithZero(result);
         }
     }
 }
